@@ -12,3 +12,5 @@ Thank you to:
 - aquynh and all the committers of https://github.com/aquynh/capstone
 - Every committer of https://github.com/alliedmodders/hl2sdk
 - Valve for their https://github.com/ValveSoftware/source-sdk-2013
+
+Builds with Visual Studio 15 for Windows.
