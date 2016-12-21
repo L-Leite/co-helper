@@ -34,7 +34,14 @@ void __fastcall hkFinishUnDuck( CCSGameMovement* thisptr )
 	{
 		Vector origin = thisptr->mv->GetAbsOrigin();
 		origin.z += DOUBLEDUCK_JUMP_HEIGHT;
-		thisptr->mv->SetAbsOrigin( origin );
+
+		trace_t trace;
+
+		//UTIL_TraceHull( thisptr->mv->GetAbsOrigin(), origin, VEC_HULL_MIN, VEC_HULL_MAX, thisptr->PlayerSolidMask(), thisptr->player, COLLISION_GROUP_PLAYER_MOVEMENT, &trace );
+
+		//if ( !trace.startsolid && trace.fraction == 1.0f )
+			thisptr->mv->SetAbsOrigin( origin );
+
 		g_bShouldDoubleDuck = false;
 	}
 
@@ -42,13 +49,10 @@ void __fastcall hkFinishUnDuck( CCSGameMovement* thisptr )
 }
 
 void HookCSGameMovement()
-{														  
+{
 	duckHook->SetupHook( (BYTE*) Addresses::Duck, (BYTE*) &hkDuck );
 	duckHook->Hook();
 
-	DWORD finishUnduckAddress = g_dwServerBase + 0x3BDE00;
-	ConsoleDebugW( L"FinishUnduck address: %X\n", finishUnduckAddress );
-
-	finishUnduckHook->SetupHook( (BYTE*) finishUnduckAddress, (BYTE*) &hkFinishUnDuck );
+	finishUnduckHook->SetupHook( (BYTE*) Addresses::FinishUnDuck, (BYTE*) &hkFinishUnDuck );
 	finishUnduckHook->Hook();
 }

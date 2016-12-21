@@ -127,15 +127,7 @@ bool HandleRequiredFiles()
 	for ( auto& dir : filesReqFile.GetCopyDirectories() )
 	{	
 		swprintf( g_wzBuffer, L"%s\\csgo\\%S\0\0", g_pGameDirectory, dir );
-		swprintf( extraBuffer, L"%s\\csco\\%S\0\0", g_pMainDirectory, dir );				
-
-		DWORD attributes = GetFileAttributesW( extraBuffer );
-
-		if ( ( attributes != INVALID_FILE_ATTRIBUTES || !(attributes & FILE_ATTRIBUTE_DIRECTORY) ) && !PathIsDirectoryEmptyW( extraBuffer ) )
-		{	   				
-			printf( "%s already exists, continuing...\n", dir );
-			continue;
-		}
+		swprintf( extraBuffer, L"%s\\csco\\%S\0\0", g_pMainDirectory, dir );	
 
 		fileOp.wFunc = FO_COPY;
 		fileOp.pFrom = g_wzBuffer;

@@ -24,7 +24,8 @@ extern DWORD HandleCommand_JoinClass;
 extern DWORD GetIntoGame;
 extern DWORD DLLShutdown;
 extern DWORD Duck;
-extern DWORD FinishDuck;
+extern DWORD FinishUnDuck;
+extern DWORD TraceHull;
 }
 
 void GetAddresses();

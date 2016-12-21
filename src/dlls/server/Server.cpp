@@ -81,6 +81,11 @@ void OnServerAttach()
 	/*DWORD walkMoveAddress = g_dwServerBase + 0x27A1ED;
 	ConsoleDebugW( L"walkMoveAddress: %X\n", walkMoveAddress );
 	memset( (void*) walkMoveAddress, 0x90, 42 );*/
+				   
+	// It wont auto reload ammo when transitioning to a new round
+	BYTE* roundReloadAddress = (BYTE*) SearchPattern( L"server.dll", "\x74\x2B\x8B\xCE\x80\x79\x58\xCC\x74\x06\x80\x49\x5C\x01\xEB\x17\x8B\x51\x1C\x85\xD2\x74\x10\x8D\x86\xCC\xCC\xCC\xCC\x2B\xC1\x8B\xCA\x50\xE8\xCC\xCC\xCC\xCC\x89\x9E\xCC\xCC\xCC\xCC\x8B\x07" );
+	ConsoleDebugW( L"roundReloadAddress: %p\n", roundReloadAddress );
+	*roundReloadAddress = 0xEB;
 
 	HookCSPlayer();
 	HookCSGameMovement();
