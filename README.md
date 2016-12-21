@@ -6,7 +6,7 @@ https://www.reddit.com/r/ClassicOffensive/
 Thank you to:
 - ZooL for his awesome mod
 - stevemk14ebr for his PolyHook hooking library https://github.com/stevemk14ebr/PolyHook	
--leethomason for https://github.com/leethomason/tinyxml2 and the committers of it
+- leethomason for https://github.com/leethomason/tinyxml2 and the committers of it
 - Mehis for his double-duck code in https://forums.alliedmods.net/showpost.php?p=2308824&postcount=4
 - NTAuthority for FiveM
 - aquynh and all the committers of https://github.com/aquynh/capstone
