@@ -1,3 +1,6 @@
 [submodule "libs/tinyxml2"]
 	path = libs/tinyxml2
 	url = https://github.com/Ochii/tinyxml2
+[submodule "sdk"]
+	path = sdk
+	url = https://github.com/Ochii/source-sdk-csco
