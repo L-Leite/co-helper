@@ -9,6 +9,7 @@ PLH::Detour* precacheHook = new PLH::Detour;
 PLH::Detour* state_LookupInfoHook = new PLH::Detour;
 PLH::Detour* changeTeamHook = new PLH::Detour;
 PLH::Detour* handleCommand_JoinClassHook = new PLH::Detour;
+PLH::Detour* secondPrimaryHook = new PLH::Detour;
 
 void __fastcall hkGetBulletTypeParameters( CCSPlayer* thisptr, void* edx, float &fPenetrationPower, float &flPenetrationDistance )
 {
@@ -221,6 +222,37 @@ bool __fastcall hkHandleCommand_JoinClass( CCSPlayer* thisptr )
 	return handleCommand_JoinClassHook->GetOriginal<fn_t>()(thisptr);
 }
 
+void __fastcall hkSecondaryAttack( CWeaponCSBase* thisptr )
+{									
+	using fn_t = void(__thiscall*)(CWeaponCSBase*);
+
+	if ( strcmp( thisptr->GetClassname(), "weapon_sg556" ) )
+	{
+		secondPrimaryHook->GetOriginal<fn_t>()(thisptr);
+		return;
+	}
+
+	CCSPlayer *pPlayer = thisptr->GetPlayerOwner();
+	if ( !pPlayer )
+		return;
+
+	if ( pPlayer->GetFOV() == pPlayer->GetDefaultFOV() )
+	{
+		pPlayer->SetFOV( pPlayer, 55, 0.2f );
+	}
+	else if ( pPlayer->GetFOV() == 55 )
+	{
+		pPlayer->SetFOV( pPlayer, 0, 0.15f );
+	}
+	else
+	{
+		//FIXME: This seems wrong
+		pPlayer->SetFOV( pPlayer, pPlayer->GetDefaultFOV() );
+	}
+
+	thisptr->m_flNextSecondaryAttack = gpGlobals->curtime + 0.3;
+}
+
 void HookCSPlayer()
 {
 	giveAmmoHook->SetupHook( (BYTE*) Addresses::GiveAmmo, (BYTE*) hkGiveAmmo );
@@ -246,6 +278,11 @@ void HookCSPlayer()
 
 	handleCommand_JoinClassHook->SetupHook( (BYTE*) Addresses::HandleCommand_JoinClass, (BYTE*) &hkHandleCommand_JoinClass );
 	handleCommand_JoinClassHook->Hook(); 	
+
+	/*DWORD secondPrimaryAddress = g_dwServerBase + 0x4C2720;
+	ConsoleDebugW( L"Second primary: %X", secondPrimaryAddress );
+	secondPrimaryHook->SetupHook( (BYTE*) secondPrimaryAddress, (BYTE*) &hkSecondaryAttack );
+	secondPrimaryHook->Hook();*/
 
 	/*BYTE* bulletTypeAdd = (BYTE*) (address + 0x4297C0);
 

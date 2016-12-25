@@ -131,5 +131,14 @@
     <ClCompile Include="..\shared\stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\sdk\game\server\player.cpp">
+      <Filter>Source Files\SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sdk\game\shared\cstrike15\weapon_csbase.cpp">
+      <Filter>Source Files\SDK\cstrike15</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\sdk\game\shared\basecombatweapon_shared.cpp">
+      <Filter>Source Files\SDK</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

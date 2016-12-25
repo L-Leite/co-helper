@@ -189,13 +189,16 @@
     <ClCompile Include="..\..\..\sdk\game\server\basecombatweapon.cpp" />
     <ClCompile Include="..\..\..\sdk\game\server\baseentity.cpp" />
     <ClCompile Include="..\..\..\sdk\game\server\cstrike15\cs_player.cpp" />
+    <ClCompile Include="..\..\..\sdk\game\server\player.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\ammodef.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\basecombatcharacter_shared.cpp" />
+    <ClCompile Include="..\..\..\sdk\game\shared\basecombatweapon_shared.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\baseentity_shared.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\baseplayer_shared.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\cstrike15\cs_ammodef.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\cstrike15\cs_gamerules.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\cstrike15\cs_shareddefs.cpp" />
+    <ClCompile Include="..\..\..\sdk\game\shared\cstrike15\weapon_csbase.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\gamerules.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\util_shared.cpp" />
     <ClCompile Include="..\shared\FindPattern.cpp" />
