@@ -27,40 +27,40 @@
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hooks\IFileSystem.h">
-      <Filter>Header Files\Hooks</Filter>
-    </ClInclude>
     <ClInclude Include="main.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Hooks\WindowsHooks.h">
-      <Filter>Header Files\Hooks</Filter>
     </ClInclude>
     <ClInclude Include="Hooks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Updater.h">
+    <ClInclude Include="..\shared_launcher\FindPattern.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FindPattern.h">
+    <ClInclude Include="..\shared_launcher\Updater.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared_launcher\Hooks\IFileSystem.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\shared_launcher\Hooks\WindowsHooks.h">
+      <Filter>Header Files\Hooks</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Hooks\IFileSystem.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="Hooks\WindowsHooks.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="Updater.cpp">
+    <ClCompile Include="..\shared_launcher\FindPattern.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FindPattern.cpp">
+    <ClCompile Include="..\shared_launcher\Updater.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared_launcher\Hooks\WindowsHooks.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\shared_launcher\Hooks\IFileSystem.cpp">
+      <Filter>Source Files\Hooks</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

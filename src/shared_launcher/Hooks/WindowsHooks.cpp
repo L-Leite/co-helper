@@ -9,7 +9,7 @@ HMODULE WINAPI hkLoadLibraryExA( LPCSTR lpLibFileName, HANDLE hFile, DWORD dwFla
 {
 	using fn_t = HMODULE( WINAPI* )(LPCSTR, HANDLE, DWORD);
 
-	// Let's keep these incase the user has something like metamod source
+	// Let's keep these incase the user has something like sourcemod
 	static bool bClientCalled = false;
 	static bool bServerCalled = false;
 	static bool bFileSystemCalled = false;
@@ -25,7 +25,7 @@ HMODULE WINAPI hkLoadLibraryExA( LPCSTR lpLibFileName, HANDLE hFile, DWORD dwFla
 
 		bServerCalled = true;
 	}
-
+#ifndef DEDICATED_LAUNCHER
 	else if ( !bClientCalled && strstr( lpLibFileName, "bin\\client.dll" ) )
 	{
 		using HookClient_t = bool(*)();
@@ -35,7 +35,7 @@ HMODULE WINAPI hkLoadLibraryExA( LPCSTR lpLibFileName, HANDLE hFile, DWORD dwFla
 
 		bClientCalled = true;
 	}
-
+#endif
 	else if ( !bFileSystemCalled && strstr( lpLibFileName, "bin\\filesystem_stdio.dll" ) )
 	{
 		OnFileSystemLoad( res );

@@ -154,7 +154,11 @@ void HookLauncher()
 {
 	printf( "Hooking Launcher...\n" );
 
+#ifdef DEDICATED_LAUNCHER
+	BYTE* getExeDirAddress = (BYTE*) SearchPattern( L"dedicated.dll", "\x55\x8B\xEC\x81\xEC\xCC\xCC\xCC\xCC\x80\x3D\xCC\xCC\xCC\xCC\xCC\x56" );
+#else
 	BYTE* getExeDirAddress = (BYTE*) SearchPattern( L"launcher.dll", "\x55\x8B\xEC\x81\xEC\xCC\xCC\xCC\xCC\x80\x3D\xCC\xCC\xCC\xCC\xCC\x56" );
+#endif
 	printf( "FileSystem_GetExecutableDir: %p", getExeDirAddress );
 
 	exeDirHook->SetupHook( getExeDirAddress, (BYTE*) hkFileSystem_GetExecutableDir );

@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{37C53ADC-2F73-47B1-B6ED-DB5F7BCBA2FF}</ProjectGuid>
+    <ProjectGuid>{188BA9B6-D0A6-46B3-80F4-AB74E608F541}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>CSLauncher</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
@@ -94,7 +94,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;COMPILER_MSVC;COMPILER_MSVC32;BLACKBONE_IMPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;COMPILER_MSVC;COMPILER_MSVC32;DEDICATED_LAUNCHER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
       <FloatingPointModel>Fast</FloatingPointModel>
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)libs\PolyHook;$(SolutionDir)libs\tinyxml2;$(SolutionDir)sdk\public;$(SolutionDir)sdk\public\tier0;$(SolutionDir)src\shared_launcher</AdditionalIncludeDirectories>
@@ -133,7 +133,7 @@
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;COMPILER_MSVC;COMPILER_MSVC32;BLACKBONE_IMPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;COMPILER_MSVC;COMPILER_MSVC32;DEDICATED_LAUNCHER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
       <FloatingPointModel>Fast</FloatingPointModel>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -190,10 +190,10 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Launcher.ico" />
+    <Image Include="Dedicated.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Launcher.rc" />
+    <ResourceCompile Include="Dedicated.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
