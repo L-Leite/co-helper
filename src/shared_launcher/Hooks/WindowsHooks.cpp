@@ -35,12 +35,12 @@ HMODULE WINAPI hkLoadLibraryExA( LPCSTR lpLibFileName, HANDLE hFile, DWORD dwFla
 
 		bClientCalled = true;
 	}
-#endif
 	else if ( !bFileSystemCalled && strstr( lpLibFileName, "bin\\filesystem_stdio.dll" ) )
 	{
 		OnFileSystemLoad( res );
 		bFileSystemCalled = true;
 	}
+#endif
 
 	return res;
 }

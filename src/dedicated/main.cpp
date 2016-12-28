@@ -152,6 +152,8 @@ int StartLauncher( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLin
 	using DedicatedMain_t = int(*)(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow);
 	DedicatedMain_t pfnDedicatedMain = (DedicatedMain_t) GetProcAddress( g_hDedicated, "DedicatedMain" );
 
+	// Dedicated has filesystem implemented in it 
+	OnFileSystemLoad( g_hDedicated );
 	HookLauncher();
 
 	return pfnDedicatedMain( hInstance, hPrevInstance, cmdLine, nCmdShow );

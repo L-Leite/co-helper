@@ -247,6 +247,7 @@ bool ReadFileAndSize( const wchar_t* fileName, char** buffer, DWORD* fileSize, H
 	return true;
 }
 
+// We shouldn't need to update the matchmaking libraries since we don't use them
 bool UpdateGameDlls()
 {
 	bool bFirstRun = false;
@@ -294,6 +295,34 @@ bool UpdateGameDlls()
 		}
 
 		printf( "Copied client.dll successfully...\n" );
+
+		swprintf_s( originalDll, L"%s\\csgo\\bin\\matchmaking.dll", g_pGameDirectory );
+		swprintf_s( g_wzBuffer, L"%s\\csco\\bin\\matchmaking.dll", g_pMainDirectory );
+
+		res = CopyFileW( originalDll, g_wzBuffer, false );
+
+		if ( !res )
+		{
+			printf( "Failed to copy matchmaking.dll!\n" );
+			return false;
+		}
+
+		printf( "Copied matchmaking.dll successfully...\n" );
+
+#ifdef DEDICATED_LAUNCHER
+		swprintf_s( originalDll, L"%s\\csgo\\bin\\matchmaking_ds.dll", g_pGameDirectory );
+		swprintf_s( g_wzBuffer, L"%s\\csco\\bin\\matchmaking_ds.dll", g_pMainDirectory );
+
+		res = CopyFileW( originalDll, g_wzBuffer, false );
+
+		if ( !res )
+		{
+			printf( "Failed to copy matchmaking_ds.dll!\n" );
+			return false;
+		}
+
+		printf( "Copied matchmaking_ds.dll successfully...\n" );
+#endif
 
 		swprintf_s( originalDll, L"%s\\csgo\\bin\\server.dll", g_pGameDirectory );
 		swprintf_s( g_wzBuffer, L"%s\\csco\\bin\\server.dll", g_pMainDirectory );

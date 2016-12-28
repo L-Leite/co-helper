@@ -119,6 +119,16 @@ void __fastcall hkAddSearchPath( IFileSystem* thisptr, void* edx, const char* pP
 		sprintf_s( szNewPath, "%S\\csgo", g_pGameDirectory );
 	}
 
+	else if ( strstr( pPath, "csgo" ) )
+	{
+		sprintf_s( szNewPath, "%S\\csgo", g_pGameDirectory );
+	}
+
+	else if ( strstr( pPath, "csgo\\bin" ) )
+	{
+		sprintf_s( szNewPath, "%S\\csgo\\bin", g_pGameDirectory );
+	}
+
 	else if ( strstr( pPath, "content\\platform" ) )
 	{
 		sprintf_s( szNewPath, "%S\\platform", g_pGameDirectory );
@@ -149,12 +159,58 @@ bool __fastcall hkFileSystem_GetExecutableDir( char* exedir ) // exeDirLen got o
 	return true;
 }
 
+#ifdef DEDICATED_LAUNCHER
+void* FileSystemFactory( const char* pName, int* pReturnCode )
+{
+	using fn_t = void*(*)(const char*, int*);
+	return ((fn_t) ((DWORD) g_hDedicated + 0x47D0))(pName, pReturnCode);
+}
+#endif
+
+void OnFileSystemLoad( HMODULE hFileSystem )
+{
+	using CreateInterface_t = void*(*)(const char* pName, int* pReturnCode);
+
+	printf( "Hooking FileSystem...\n" );
+
+#ifdef DEDICATED_LAUNCHER
+	void* pFileSystem = FileSystemFactory( "VFileSystem017", nullptr );
+#else
+	CreateInterface_t pSys = (CreateInterface_t) GetProcAddress( hFileSystem, "CreateInterface" );
+
+	if ( !pSys )
+	{
+		printf( "Couldn't get CreateInterface from filesystem!\n" );
+		return;
+	}
+
+	void* pFileSystem = pSys( "VFileSystem017", nullptr );
+#endif
+
+	if ( !pFileSystem )
+	{
+		printf( "Couldn't get VFileSystem017!\n" );
+		return;
+	}
+
+	fileSystemHook->SetupHook( (BYTE*) pFileSystem, 11, (BYTE*) &hkAddSearchPath );
+	fileSystemHook->Hook();
+	//fnGetSearchpath = fileSystemHook->HookAdditional< GetSearchPath_t >( 17, (BYTE*) &hkGetSearchPath );
+	//fnOpenEx = fileSystemHook->HookAdditional< void* >( 72, (BYTE*) &hkOpenEx );
+
+	/*g_pBaseFileSystemHook->SetupHook( (BYTE*) ( (DWORD) pFileSystem + 4 ), 10, (BYTE*) &hkFileExists );
+	g_pBaseFileSystemHook->Hook();
+	fnGetFileTime = g_pBaseFileSystemHook->HookAdditional< void* >( 13, (BYTE*) &hkGetFileTime );*/
+
+	printf( "Filesystem is donezo\n" );
+}
+
 // This code is small so why not let it stay here
 void HookLauncher()
 {
 	printf( "Hooking Launcher...\n" );
 
-#ifdef DEDICATED_LAUNCHER
+#ifdef DEDICATED_LAUNCHER	
 	BYTE* getExeDirAddress = (BYTE*) SearchPattern( L"dedicated.dll", "\x55\x8B\xEC\x81\xEC\xCC\xCC\xCC\xCC\x80\x3D\xCC\xCC\xCC\xCC\xCC\x56" );
 #else
 	BYTE* getExeDirAddress = (BYTE*) SearchPattern( L"launcher.dll", "\x55\x8B\xEC\x81\xEC\xCC\xCC\xCC\xCC\x80\x3D\xCC\xCC\xCC\xCC\xCC\x56" );
@@ -163,27 +219,4 @@ void HookLauncher()
 
 	exeDirHook->SetupHook( getExeDirAddress, (BYTE*) hkFileSystem_GetExecutableDir );
 	exeDirHook->Hook();
-}
-
-void OnFileSystemLoad( HMODULE hFileSystem )
-{
-	using CreateInterface_t = void*(*)(const char* pName, int* pReturnCode);
-
-	printf( "Hooking FileSystem...\n" );
-
-	void* pFileSystem = nullptr;
-	CreateInterface_t pSys = (CreateInterface_t) GetProcAddress( hFileSystem, "CreateInterface" );
-
-	if ( pSys )
-	{
-		pFileSystem = pSys( "VFileSystem017", nullptr );
-		fileSystemHook->SetupHook( (BYTE*) pFileSystem, 11, (BYTE*) &hkAddSearchPath );
-		fileSystemHook->Hook();
-		//fnGetSearchpath = fileSystemHook->HookAdditional< GetSearchPath_t >( 17, (BYTE*) &hkGetSearchPath );
-		//fnOpenEx = fileSystemHook->HookAdditional< void* >( 72, (BYTE*) &hkOpenEx );
-
-		/*g_pBaseFileSystemHook->SetupHook( (BYTE*) ( (DWORD) pFileSystem + 4 ), 10, (BYTE*) &hkFileExists );
-		g_pBaseFileSystemHook->Hook();
-		fnGetFileTime = g_pBaseFileSystemHook->HookAdditional< void* >( 13, (BYTE*) &hkGetFileTime );*/		 		
-	}
 }
