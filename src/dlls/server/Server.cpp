@@ -14,9 +14,6 @@ void InitializeSharedInterfaces()
 	HMODULE engine = GetModuleHandleW( L"engine.dll" );
 	HMODULE localize = GetModuleHandleW( L"localize.dll" );
 	HMODULE materialSystem = GetModuleHandleW( L"MaterialSystem.dll" );
-	//HMODULE shaderapidx9 = GetModuleHandleW( L"shaderapidx9.dll" );
-	//HMODULE vgui2 = GetModuleHandleW( L"vgui2.dll" );
-	//HMODULE vguimatsurface = GetModuleHandleW( L"vguimatsurface.dll" );
 	HMODULE vstdlib = GetModuleHandleW( L"vstdlib.dll" );
 
 	CreateInterfaceFn createInterfaces[] =
@@ -24,9 +21,6 @@ void InitializeSharedInterfaces()
 		(CreateInterfaceFn) GetProcAddress( engine, "CreateInterface" ),
 		(CreateInterfaceFn) GetProcAddress( localize, "CreateInterface" ),
 		(CreateInterfaceFn) GetProcAddress( materialSystem, "CreateInterface" ),
-		//(CreateInterfaceFn) GetProcAddress( shaderapidx9, "CreateInterface" ),
-		//(CreateInterfaceFn) GetProcAddress( vgui2, "CreateInterface" ),
-		//(CreateInterfaceFn) GetProcAddress( vguimatsurface, "CreateInterface" ),
 		(CreateInterfaceFn) GetProcAddress( vstdlib, "CreateInterface" )
 	};
 
