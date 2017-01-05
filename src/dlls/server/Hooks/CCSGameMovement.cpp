@@ -40,7 +40,7 @@ void __fastcall hkFinishUnDuck( CCSGameMovement* thisptr )
 		// Let's just use MASK_PLAYERSOLID, getting player mask inside the arguments fucks up the stack (pushes false)
 		UTIL_TraceHull( thisptr->mv->GetAbsOrigin(), origin, VEC_HULL_MIN, VEC_HULL_MAX, MASK_PLAYERSOLID, thisptr->player, COLLISION_GROUP_PLAYER_MOVEMENT, &trace );
 
-		if ( !trace.startsolid && trace.fraction == 1.0f )
+		if ( !trace.startsolid || trace.fraction != 1.0f )
 			thisptr->mv->SetAbsOrigin( origin );
 
 		g_bShouldDoubleDuck = false;

@@ -115,21 +115,16 @@ bool __fastcall hkClientCommand( CCSPlayer* thisptr, void* edx, const CCommand &
 
 	else if ( FStrEq( pcmd, "menuselect" ) )
 	{
-		ConsoleDebugW( L"menuselect called" );
+		int iClass = atoi( args[ 1 ] );
 
-		if ( thisptr->State_Get() == STATE_PICKINGCLASS )
-		{
-			int iClass = atoi( args[ 1 ] );
+		if ( thisptr->GetTeamNumber() == TEAM_CT )
+			iClass += LAST_T_CLASS;
 
-			if ( thisptr->GetTeamNumber() == TEAM_CT )
-				iClass += LAST_T_CLASS;
+		ConsoleDebugW( L"ClientCommand: picking class %i\n", iClass );
 
-			ConsoleDebugW( L"ClientCommand: picking class %i\n", iClass );
+		thisptr->HandleCommand_JoinClass( iClass );
 
-			thisptr->HandleCommand_JoinClass( iClass );
-
-			return true;
-		}
+		return true;
 	}
 
 	return clientCommandHook->GetOriginal<fn_t>()(thisptr, args);
@@ -223,8 +218,8 @@ bool __fastcall hkHandleCommand_JoinClass( CCSPlayer* thisptr )
 }
 
 void __fastcall hkSecondaryAttack( CWeaponCSBase* thisptr )
-{									
-	using fn_t = void(__thiscall*)(CWeaponCSBase*);
+{
+	using fn_t = void( __thiscall* )(CWeaponCSBase*);
 
 	if ( strcmp( thisptr->GetClassname(), "weapon_sg556" ) )
 	{
@@ -277,7 +272,7 @@ void HookCSPlayer()
 	changeTeamHook->Hook();*/
 
 	handleCommand_JoinClassHook->SetupHook( (BYTE*) Addresses::HandleCommand_JoinClass, (BYTE*) &hkHandleCommand_JoinClass );
-	handleCommand_JoinClassHook->Hook(); 	
+	handleCommand_JoinClassHook->Hook();
 
 	/*DWORD secondPrimaryAddress = g_dwServerBase + 0x4C2720;
 	ConsoleDebugW( L"Second primary: %X", secondPrimaryAddress );
