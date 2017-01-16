@@ -26,6 +26,16 @@ extern DWORD DLLShutdown;
 extern DWORD Duck;
 extern DWORD FinishUnDuck;
 extern DWORD TraceHull;
+extern DWORD Holster_hpk2000;
+extern DWORD Holster;
+extern DWORD BloodDrips;
+extern DWORD DispatchEffect;
+extern DWORD ApplyMultiDamage;
+extern DWORD ApplyMultiDamage2;
+extern DWORD ClearMultiDamage;			
+extern DWORD CalculateBulletDamageForce;
+extern DWORD LockStudioHdr;
+extern DWORD CalcAbsolutePosition;
 }
 
 void GetAddresses();

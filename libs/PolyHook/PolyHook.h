@@ -27,7 +27,7 @@ namespace PLH {
 			va_list args;
 			va_start(args, fmt);
 #if defined(_DEBUG) || defined(PLH_SHOW_DEBUG_MESSAGES)
-			vfprintf_s(stdout, fmt, args);
+			//vfprintf_s(stdout, fmt, args);
 #endif
 			va_end(args);
 		}

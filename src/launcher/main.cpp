@@ -20,15 +20,11 @@ bool CreateDebugConsole()
 	if ( !result )
 		return false;
 
-#ifdef _DEBUG
 	freopen( "CONIN$", "r", stdin );
 	freopen( "CONOUT$", "w", stdout );
 	freopen( "CONOUT$", "w", stderr );
 
 	SetConsoleTitleW( L"Debug Console" );
-#else
-	SetConsoleTitleW( L"Classic Offensive" );
-#endif
 
 	return true;
 }
@@ -188,7 +184,7 @@ int APIENTRY wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCm
 	if ( !UpdateGameDlls() )
 	{
 		printf( "UpdateGameDlls failed!\n" );
-		MessageBoxW( NULL, L"CheckGameDlls failed!", L"Launcher Error", MB_OK | MB_ICONERROR );
+		MessageBoxW( NULL, L"UpdateGameDlls failed!", L"Launcher Error", MB_OK | MB_ICONERROR );
 		return 0;
 	}
 

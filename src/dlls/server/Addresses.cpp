@@ -26,10 +26,22 @@ DWORD DLLShutdown = 0;
 DWORD Duck = 0;
 DWORD FinishUnDuck = 0;
 DWORD TraceHull = 0;
+DWORD Holster_hpk2000 = 0;
+DWORD Holster = 0;
+DWORD BloodDrips = 0;
+DWORD DispatchEffect = 0;
+DWORD ApplyMultiDamage = 0;
+DWORD ApplyMultiDamage2 = 0;
+DWORD ClearMultiDamage = 0;
+DWORD CalculateBulletDamageForce = 0;
+DWORD LockStudioHdr = 0;
+DWORD CalcAbsolutePosition = 0;
 }
 
 void GetAddresses()
 {
+	ConsoleDebugW( L"\n### SERVER ADDRESSES START\n" );
+
 	Addresses::EmitSound = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x70\x56\x57\x8B\xF9\x8B\x0D\xCC\xCC\xCC\xCC\x83\xB9\xCC\xCC\xCC\xCC\xCC" );
 	ConsoleDebugW( L"EmitSound: %X\n", Addresses::EmitSound );
 
@@ -102,13 +114,52 @@ void GetAddresses()
 	Addresses::TraceHull = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xE4\xF0\x81\xEC\xCC\xCC\xCC\xCC\x56\xFF\x75\x0C" );
 	ConsoleDebugW( L"TraceHull: %X\n", Addresses::TraceHull );
 
+	Addresses::Holster_hpk2000 = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xEC\x0C\x53\x56\x8B\xF1\x57\x8B\x86\xCC\xCC\xCC\xCC\x3D\xCC\xCC\xCC\xCC\x75\x09\x80\xBE\xCC\xCC\xCC\xCC\xCC\x74\x18\x3D\xCC\xCC\xCC\xCC\x0F\x85\xCC\xCC\xCC\xCC\x80\xBE\xCC\xCC\xCC\xCC\xCC\x0F\x85\xCC\xCC\xCC\xCC\x8B\x1D\xCC\xCC\xCC\xCC\xF3\x0F\x10\x86" );
+	ConsoleDebugW( L"Holster_hpk2000: %X\n", Addresses::Holster_hpk2000 );
+
+	Addresses::Holster = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xEC\x10\x53\x56\x8B\x35\xCC\xCC\xCC\xCC\x57" );
+	ConsoleDebugW( L"Holster: %X\n", Addresses::Holster );
+
+	Addresses::BloodDrips = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xEC\x74\x53\x8B\x5D\x08\x89\x55\xFC" );
+	ConsoleDebugW( L"BloodDrips: %X\n", Addresses::BloodDrips );
+
+	Addresses::DispatchEffect = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x20\x56\x8B\xF1\x8D\x4C\x24\x04" );
+	ConsoleDebugW( L"DispatchEffect: %X\n", Addresses::DispatchEffect );
+
+	Addresses::ApplyMultiDamage = SearchPattern( L"server.dll", "\xA1\xCC\xCC\xCC\xCC\x56\x83\xF8\xFF\x74\x66" );
+	ConsoleDebugW( L"ApplyMultiDamage: %X\n", Addresses::ApplyMultiDamage );
+
+	Addresses::ApplyMultiDamage2 = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xEC\x0C\x53\x56\x57\x8B\xFA\x8B\xF1\x85\xFF" );
+	ConsoleDebugW( L"ApplyMultiDamage2: %X\n", Addresses::ApplyMultiDamage2 );
+
+	Addresses::ClearMultiDamage = SearchPattern( L"server.dll", "\xF3\x0F\x10\x15\xCC\xCC\xCC\xCC\xF3\x0F\x10\x0D\xCC\xCC\xCC\xCC\xF3\x0F\x10\x05\xCC\xCC\xCC\xCC\xA1" );
+	ConsoleDebugW( L"ClearMultiDamage: %X\n", Addresses::ClearMultiDamage );
+
+	Addresses::CalculateBulletDamageForce = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xEC\x14\x53\x56\x8B\x75\x0C\x8B\xD9" );
+	ConsoleDebugW( L"CalculateBulletDamageForce: %X\n", Addresses::CalculateBulletDamageForce );
+
+	Addresses::LockStudioHdr = SearchPattern( L"server.dll", "\x57\x8B\xF9\x83\xBF\xCC\xCC\xCC\xCC\xCC\x0F\x84\xCC\xCC\xCC\xCC\xA1\xCC\xCC\xCC\xCC\x56" );
+	ConsoleDebugW( L"LockStudioHdr: %X\n", Addresses::LockStudioHdr );
+
+	Addresses::CalcAbsolutePosition = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xE4\xF0\x83\xEC\x68\x56\x8B\xF1\x57\x8B\x8E" );
+	ConsoleDebugW( L"CalcAbsolutePosition: %X\n", Addresses::CalcAbsolutePosition );
+
 
 	g_pEntityList = *(CBaseEntityList**)( SearchPattern( L"server.dll", "\xB9\xCC\xCC\xCC\xCC\xE8\xCC\xCC\xCC\xCC\x51\x8B\x0E" ) + 1 );
 	ConsoleDebugW( L"g_pEntityList: %p\n", g_pEntityList );
+	gEntList = (CGlobalEntityList*) g_pEntityList;
 
 	g_pPlayerStateInfos = *(CCSPlayerStateInfo**) ( SearchPattern( L"server.dll", "\x8D\x04\xC5\xCC\xCC\xCC\xCC\x8B\xE5" ) + 3 );
 	ConsoleDebugW( L"g_pPlayerStateInfos: %p\n", g_pPlayerStateInfos );
 
 	g_pGameRules = *(CGameRules***) (SearchPattern( L"server.dll", "\x89\x1D\xCC\xCC\xCC\xCC\x8B\x40\x18" ) + 2);
 	ConsoleDebugW( L"g_pGameRules: %p\n", g_pGameRules );
+
+	//g_pTE = *(ITempEntsSystem***) (SearchPattern( L"server.dll", "\xB9\xCC\xCC\xCC\xCC\xFF\x50\x50\x8D\x4C\x24\x50" ) + 1);
+	//ConsoleDebugW( L"&te: %p\n", g_pTE );
+
+	CBaseEntity::m_nDebugPlayer = *(int**) (SearchPattern( L"server.dll", "\x8B\x15\xCC\xCC\xCC\xCC\x83\xEC\x3C" ) + 2);
+	ConsoleDebugW( L"&CBaseEntity::m_nDebugPlayer: %p\n", CBaseEntity::m_nDebugPlayer );
+
+	ConsoleDebugW( L"### SERVER ADDRESSES END\n\n" );
 }

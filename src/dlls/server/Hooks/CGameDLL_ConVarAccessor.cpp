@@ -104,6 +104,18 @@ void SetOtherCvars()
 		cl_viewmodel_shift_right_amt->SetValue( 0.25f );
 		cl_viewmodel_shift_right_amt->m_pszDefaultValue = "0.25";
 	}
+
+	ConVar* sv_penetration_type = cvar->FindVar( "sv_penetration_type" );
+	ConsoleDebugW( L"sv_penetration_type: %p\n", sv_penetration_type );
+
+	if ( sv_penetration_type )
+	{
+		sv_penetration_type->SetValue( 0 );
+		sv_penetration_type->m_pszDefaultValue = "0";
+		sv_penetration_type->RemoveFlags( FCVAR_HIDDEN );
+		sv_penetration_type->RemoveFlags( FCVAR_DEVELOPMENTONLY );				
+		ConsoleDebugW( L"Changed sv_penetration_type value and flags...\n" );
+	}
 }
 
 bool __fastcall hkRegisterConCommandBase( IConCommandBaseAccessor* thisptr, void* edx, ConCommandBase* pCommand )

@@ -10,15 +10,17 @@ PLH::Detour* state_LookupInfoHook = new PLH::Detour;
 PLH::Detour* changeTeamHook = new PLH::Detour;
 PLH::Detour* handleCommand_JoinClassHook = new PLH::Detour;
 PLH::Detour* secondPrimaryHook = new PLH::Detour;
+PLH::Detour* holster_UspHook = new PLH::Detour;
+PLH::Detour* fireBulletHook = new PLH::Detour;
 
-void __fastcall hkGetBulletTypeParameters( CCSPlayer* thisptr, void* edx, float &fPenetrationPower, float &flPenetrationDistance )
+void __fastcall hkGetBulletTypeParameters( CCSPlayer* thisptr, void*, float& fPenetrationPower, float& flPenetrationDistance )
 {
 	using fn_t = void( __thiscall* )(CCSPlayer*, float&, float&);
 
-	fPenetrationPower = 50000.f;
-	flPenetrationDistance = 50000.f;
+	fPenetrationPower = 1000;
+	flPenetrationDistance = 8000.0;
 
-	return bulletTypeHook->GetOriginal<fn_t>()(thisptr, fPenetrationPower, flPenetrationDistance);
+	//return bulletTypeHook->GetOriginal<fn_t>()(thisptr, fPenetrationPower, flPenetrationDistance);
 }
 
 void __fastcall hkGiveAmmo( CWeaponCSBase* thisptr, void* edx, int a1, int iCount, bool bSuppressSound, int a2 )
@@ -88,7 +90,7 @@ bool __fastcall hkClientCommand( CCSPlayer* thisptr, void* edx, const CCommand &
 
 	else if ( FStrEq( pcmd, "buyammo2" ) )
 	{
-		CWeaponCSBaseGun* secondary = static_cast<CWeaponCSBaseGun*>(thisptr->Weapon_GetSlot( WEAPON_SLOT_PISTOL ));
+		CWeaponCSBase* secondary = static_cast<CWeaponCSBase*>(thisptr->Weapon_GetSlot( WEAPON_SLOT_PISTOL ));
 
 		if ( secondary )
 			BuyWeaponAmmo( thisptr, secondary );
@@ -248,6 +250,41 @@ void __fastcall hkSecondaryAttack( CWeaponCSBase* thisptr )
 	thisptr->m_flNextSecondaryAttack = gpGlobals->curtime + 0.3;
 }
 
+bool __fastcall hkHolster_USP( CBaseCombatWeapon* thisptr, void*, CBaseCombatWeapon *pSwitchingTo )
+{
+	using fn_t = bool(__thiscall*)(CBaseCombatWeapon*, CBaseCombatWeapon*);
+	return ((fn_t)Addresses::Holster)( thisptr, pSwitchingTo );
+}
+
+void __fastcall hkFireBullet( CCSPlayer* thisptr, void*, Vector vecSrc, const QAngle &shootAngles, int iPenetration, void* pEconItemAttributes, int iBulletType, int iDamage, float flRangeModifier, CBaseEntity *pevAttacker, bool bDoEffects, float x, float y )
+{
+	//using fn_t = void(__thiscall*)(CCSPlayer*, Vector, const QAngle&, float, int, int, int, float, CBaseEntity*, bool, float, float, int, int);
+
+	/*int iWeaponID = thisptr->GetActiveCSWeapon()->GetWeaponID();
+
+	const char* weaponAlias = WeaponIDToAlias( iWeaponID );
+
+	if ( !weaponAlias )
+	{
+		DevMsg( "FX_FireBullets: weapon alias for ID %i not found\n", iWeaponID );
+		return;
+	}
+
+	char wpnName[ 128 ];
+	Q_snprintf( wpnName, sizeof( wpnName ), "weapon_%s", weaponAlias );
+	WEAPON_FILE_INFO_HANDLE	hWpnInfo = LookupWeaponInfoSlot( wpnName );
+
+	if ( hWpnInfo == GetInvalidWeaponInfoHandle() )
+	{
+		DevMsg( "FX_FireBullets: LookupWeaponInfoSlot failed for weapon %s\n", wpnName );
+		return;
+	}
+
+	CCSWeaponInfo *pWeaponInfo = static_cast< CCSWeaponInfo* >(GetFileWeaponInfoFromHandle( hWpnInfo ));*/
+
+	thisptr->FireBullet( vecSrc, shootAngles, 0.0f, 8192.0f, iPenetration, iBulletType, iDamage, flRangeModifier, pevAttacker, bDoEffects, x, y );
+}
+
 void HookCSPlayer()
 {
 	giveAmmoHook->SetupHook( (BYTE*) Addresses::GiveAmmo, (BYTE*) hkGiveAmmo );
@@ -279,8 +316,18 @@ void HookCSPlayer()
 	secondPrimaryHook->SetupHook( (BYTE*) secondPrimaryAddress, (BYTE*) &hkSecondaryAttack );
 	secondPrimaryHook->Hook();*/
 
-	/*BYTE* bulletTypeAdd = (BYTE*) (address + 0x4297C0);
+	BYTE* bulletTypeAdd = (BYTE*) ((DWORD)g_dwServerBase + 0x42C8D0);
+	ConsoleDebugW( L"GetBulletTypeParameters: %p\n", bulletTypeAdd );
 
-	bulletTypeHook->SetupHook( bulletTypeAdd, (BYTE*) hkGetBulletTypeParameters );
-	bulletTypeHook->Hook();*/
+	bulletTypeHook->SetupHook( bulletTypeAdd, (BYTE*) &hkGetBulletTypeParameters );
+	bulletTypeHook->Hook();
+
+	//holster_UspHook->SetupHook( (BYTE*) Addresses::Holster_hpk2000, (BYTE*) &hkHolster_USP );
+	//holster_UspHook->Hook();
+
+	BYTE* fireBulletAddy = (BYTE*) ((DWORD) g_dwServerBase + 0x42D6A0);
+	ConsoleDebugW( L"CCSPlayer::FireBullet: %p\n", fireBulletAddy );
+
+	fireBulletHook->SetupHook( fireBulletAddy, (BYTE*) &hkFireBullet );
+	fireBulletHook->Hook();
 }

@@ -8,9 +8,12 @@
 #include "cdll_int.h"
 #include "interfaces\interfaces.h"
 #include "eiface.h"
+#include "ienginevgui.h"
 
 #include "vgui\IPanel.h"
 #include "vgui\ISurface.h"
+
+#include "ConVars.h"
 
 #ifdef CLIENT_DLL
 #include "cdll_int.h"		

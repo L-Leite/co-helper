@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ConVars.h"
 #include "Hooks.h"
 
 uintptr_t g_dwClientBase = 0;
@@ -8,10 +7,13 @@ char g_szBuffer[ 1024 ];
 wchar_t g_wzBuffer[ 1024 ];
 
 IClientEntityList* entitylist = nullptr;
+IBaseClientDLL* g_pClientDLL = nullptr;
+IVEngineClient* g_pEngineClient = nullptr;
+IVEngineClient* engine = nullptr;
 
 void InitializeSharedInterfaces()
 {							  
-	HMODULE engine = GetModuleHandleW( L"engine.dll" );
+	HMODULE hEngine = GetModuleHandleW( L"engine.dll" );
 	HMODULE filesystem_stdio = GetModuleHandleW( L"filesystem_stdio.dll" );
 	HMODULE localize = GetModuleHandleW( L"localize.dll" );
 	HMODULE materialSystem = GetModuleHandleW( L"MaterialSystem.dll" );
@@ -22,7 +24,7 @@ void InitializeSharedInterfaces()
 
 	CreateInterfaceFn createInterfaces[] =
 	{
-		(CreateInterfaceFn) GetProcAddress( engine, "CreateInterface" ),
+		(CreateInterfaceFn) GetProcAddress( hEngine, "CreateInterface" ),
 		(CreateInterfaceFn) GetProcAddress( filesystem_stdio, "CreateInterface" ),
 		(CreateInterfaceFn) GetProcAddress( localize, "CreateInterface" ),
 		(CreateInterfaceFn) GetProcAddress( materialSystem, "CreateInterface" ),
@@ -33,10 +35,14 @@ void InitializeSharedInterfaces()
 	};
 
 	ConnectInterfaces( createInterfaces, sizeof( createInterfaces ) / sizeof( CreateInterfaceFn ) );
+
+	g_pEngineClient = (IVEngineClient*) createInterfaces[ 0 ]( VENGINE_CLIENT_INTERFACE_VERSION, nullptr );
+	engine = g_pEngineClient;
 }
 
 void InitializeClientInterfaces()
 {
+	ConsoleDebugW( L"\n### CLIENT INTERFACE START\n" );
 	InitializeSharedInterfaces();
 
 	CreateInterfaceFn clientFactory = (CreateInterfaceFn) GetProcAddress( (HMODULE) g_dwClientBase, "CreateInterface" );
@@ -46,6 +52,7 @@ void InitializeClientInterfaces()
 
 	entitylist = (IClientEntityList*) clientFactory( VCLIENTENTITYLIST_INTERFACE_VERSION, nullptr );
 	ConsoleDebugW( L"entitylist: %p\n", entitylist );
+	ConsoleDebugW( L"### CLIENT INTERFACE END\n\n" );
 }
 
 void OnClientAttach()
@@ -54,9 +61,9 @@ void OnClientAttach()
 
 	Main_UnprotectModule( (HMODULE) g_dwClientBase );
 
-	InitializeClientInterfaces();  
-
+	InitializeClientInterfaces();  	  
 	GetAddresses();
+	MathLib_Init( 2.2f, 2.2f, 0.0f, 2.0f );
 
 	HookPanel();
 #ifdef VGUI_TEST

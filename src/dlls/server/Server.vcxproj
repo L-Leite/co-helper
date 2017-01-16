@@ -107,7 +107,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>PolyHook.lib;interfaces.lib;tier0.lib;tier1.lib;tier2.lib;tier3.lib;vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PolyHook.lib;interfaces.lib;mathlib.lib;tier0.lib;tier1.lib;tier2.lib;tier3.lib;vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -147,7 +147,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>PolyHook.lib;interfaces.lib;tier0.lib;tier1.lib;tier2.lib;tier3.lib;vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PolyHook.lib;interfaces.lib;mathlib.lib;tier0.lib;tier1.lib;tier2.lib;tier3.lib;vstdlib.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -178,6 +178,7 @@
     <ClInclude Include="..\shared\targetver.h" />
     <ClInclude Include="..\shared\Utilities.h" />
     <ClInclude Include="Addresses.h" />
+    <ClInclude Include="ConVars.h" />
     <ClInclude Include="Hooks.h" />
     <ClInclude Include="Hooks\CCSGameMovement.h" />
     <ClInclude Include="Hooks\CCSPlayer.h" />
@@ -186,10 +187,12 @@
     <ClInclude Include="Server.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\sdk\game\server\baseanimating.cpp" />
     <ClCompile Include="..\..\..\sdk\game\server\basecombatweapon.cpp" />
     <ClCompile Include="..\..\..\sdk\game\server\baseentity.cpp" />
     <ClCompile Include="..\..\..\sdk\game\server\cstrike15\cs_player.cpp" />
     <ClCompile Include="..\..\..\sdk\game\server\player.cpp" />
+    <ClCompile Include="..\..\..\sdk\game\server\util.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\ammodef.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\basecombatcharacter_shared.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\basecombatweapon_shared.cpp" />
@@ -197,14 +200,18 @@
     <ClCompile Include="..\..\..\sdk\game\shared\baseplayer_shared.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\cstrike15\cs_ammodef.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\cstrike15\cs_gamerules.cpp" />
+    <ClCompile Include="..\..\..\sdk\game\shared\cstrike15\cs_player_shared.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\cstrike15\cs_shareddefs.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\cstrike15\weapon_csbase.cpp" />
+    <ClCompile Include="..\..\..\sdk\game\shared\debugoverlay_shared.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\gamerules.cpp" />
+    <ClCompile Include="..\..\..\sdk\game\shared\takedamageinfo.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\util_shared.cpp" />
     <ClCompile Include="..\shared\FindPattern.cpp" />
     <ClCompile Include="..\shared\stdafx.cpp" />
     <ClCompile Include="..\shared\Utilities.cpp" />
     <ClCompile Include="Addresses.cpp" />
+    <ClCompile Include="ConVars.cpp" />
     <ClCompile Include="Hooks\CCSGameMovement.cpp" />
     <ClCompile Include="Hooks\CCSPlayer.cpp" />
     <ClCompile Include="Hooks\CGameDLL_ConVarAccessor.cpp" />
