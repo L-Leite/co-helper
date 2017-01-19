@@ -191,6 +191,7 @@
     <ClCompile Include="..\..\..\sdk\game\server\basecombatweapon.cpp" />
     <ClCompile Include="..\..\..\sdk\game\server\baseentity.cpp" />
     <ClCompile Include="..\..\..\sdk\game\server\cstrike15\cs_player.cpp" />
+    <ClCompile Include="..\..\..\sdk\game\server\ndebugoverlay.cpp" />
     <ClCompile Include="..\..\..\sdk\game\server\player.cpp" />
     <ClCompile Include="..\..\..\sdk\game\server\util.cpp" />
     <ClCompile Include="..\..\..\sdk\game\shared\ammodef.cpp" />

@@ -282,7 +282,7 @@ void __fastcall hkFireBullet( CCSPlayer* thisptr, void*, Vector vecSrc, const QA
 
 	CCSWeaponInfo *pWeaponInfo = static_cast< CCSWeaponInfo* >(GetFileWeaponInfoFromHandle( hWpnInfo ));*/
 
-	thisptr->FireBullet( vecSrc, shootAngles, 0.0f, 8192.0f, iPenetration, iBulletType, iDamage, flRangeModifier, pevAttacker, bDoEffects, x, y );
+	thisptr->FireBullet( vecSrc, shootAngles, iPenetration, iBulletType, iDamage, flRangeModifier, pevAttacker, bDoEffects, x, y );
 }
 
 void HookCSPlayer()

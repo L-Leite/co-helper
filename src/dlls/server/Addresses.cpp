@@ -36,6 +36,7 @@ DWORD ClearMultiDamage = 0;
 DWORD CalculateBulletDamageForce = 0;
 DWORD LockStudioHdr = 0;
 DWORD CalcAbsolutePosition = 0;
+DWORD BulletGroupCounter = 0;
 }
 
 void GetAddresses()
@@ -160,6 +161,9 @@ void GetAddresses()
 
 	CBaseEntity::m_nDebugPlayer = *(int**) (SearchPattern( L"server.dll", "\x8B\x15\xCC\xCC\xCC\xCC\x83\xEC\x3C" ) + 2);
 	ConsoleDebugW( L"&CBaseEntity::m_nDebugPlayer: %p\n", CBaseEntity::m_nDebugPlayer );
+
+	CCSPlayer::s_BulletGroupCounter = *(int**) (SearchPattern( L"server.dll", "\xA1\xCC\xCC\xCC\xCC\x51\x88\x4F\x5C" ) + 1);
+	ConsoleDebugW( L"&CCSPlayer::s_BulletGroupCounter: %p\n", CCSPlayer::s_BulletGroupCounter );
 
 	ConsoleDebugW( L"### SERVER ADDRESSES END\n\n" );
 }

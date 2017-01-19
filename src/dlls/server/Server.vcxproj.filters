@@ -161,5 +161,8 @@
     <ClCompile Include="..\..\..\sdk\game\server\baseanimating.cpp">
       <Filter>Source Files\SDK</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\sdk\game\server\ndebugoverlay.cpp">
+      <Filter>Source Files\SDK</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
