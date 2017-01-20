@@ -37,6 +37,7 @@ DWORD CalculateBulletDamageForce = 0;
 DWORD LockStudioHdr = 0;
 DWORD CalcAbsolutePosition = 0;
 DWORD BulletGroupCounter = 0;
+DWORD FireBullet = 0;
 }
 
 void GetAddresses()
@@ -144,6 +145,9 @@ void GetAddresses()
 
 	Addresses::CalcAbsolutePosition = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xE4\xF0\x83\xEC\x68\x56\x8B\xF1\x57\x8B\x8E" );
 	ConsoleDebugW( L"CalcAbsolutePosition: %X\n", Addresses::CalcAbsolutePosition );
+
+	Addresses::FireBullet = SearchPattern( L"server.dll", "\x53\x8B\xDC\x83\xEC\x08\x83\xE4\xF0\x83\xC4\x04\x55\x8B\x6B\x04\x89\x6C\x24\x04\x8B\xEC\x81\xEC\xCC\xCC\xCC\xCC\x66\x0F\x6E\x43" );
+	ConsoleDebugW( L"FireBullet: %X\n", Addresses::FireBullet );
 
 
 	g_pEntityList = *(CBaseEntityList**)( SearchPattern( L"server.dll", "\xB9\xCC\xCC\xCC\xCC\xE8\xCC\xCC\xCC\xCC\x51\x8B\x0E" ) + 1 );

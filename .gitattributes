@@ -1,17 +1,69 @@
-# Auto detect text files and perform LF normalization
+###############################################################################
+# Set default behavior to automatically normalize line endings.
+###############################################################################
 * text=auto
 
-# Custom for Visual Studio
-*.cs     diff=csharp
+###############################################################################
+# Set the merge driver for project and solution files
+#
+# Merging from the command prompt will add diff markers to the files if there
+# are conflicts (Merging from VS is not affected by the settings below, in VS
+# the diff markers are never inserted). Diff markers may cause the following 
+# file extensions to fail to load in VS. An alternative would be to treat
+# these files as binary and thus will always conflict and require user
+# intervention with every merge. To do so, just comment the entries below and
+# uncomment the group further below
+###############################################################################
 
-# Standard to msysgit
-*.doc	 diff=astextplain
-*.DOC	 diff=astextplain
-*.docx diff=astextplain
-*.DOCX diff=astextplain
-*.dot  diff=astextplain
-*.DOT  diff=astextplain
-*.pdf  diff=astextplain
-*.PDF	 diff=astextplain
-*.rtf	 diff=astextplain
-*.RTF	 diff=astextplain
+*.sln        text eol=crlf
+*.csproj     text eol=crlf
+*.vbproj     text eol=crlf
+*.vcxproj    text eol=crlf
+*.vcproj     text eol=crlf
+*.dbproj     text eol=crlf
+*.fsproj     text eol=crlf
+*.lsproj     text eol=crlf
+*.wixproj    text eol=crlf
+*.modelproj  text eol=crlf
+*.sqlproj    text eol=crlf
+*.wmaproj    text eol=crlf
+
+*.xproj      text eol=crlf
+*.props      text eol=crlf
+*.filters    text eol=crlf
+*.vcxitems text eol=crlf
+
+*.sh text
+*.bat text
+*.txt text
+*.c text
+*.h text
+*.H text
+*.cc text
+*.cpp text
+*.vpc text
+*.vgc text
+*.nut text
+*.awk text
+*.pl text
+*.py text
+*.xcconfig text
+*.vcd text
+*.vbsp text
+*.proto text
+*.inc text
+*.fxc text
+*.vsh text
+*.lst text
+*.mm text
+*.cfg text
+*.res text
+*.rc text
+*.def text
+*.vmt text
+*.inl text
+*.asm text
+
+.gitignore text
+README text
+LICENSE text

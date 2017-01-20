@@ -37,6 +37,7 @@ extern DWORD CalculateBulletDamageForce;
 extern DWORD LockStudioHdr;
 extern DWORD CalcAbsolutePosition;
 extern DWORD BulletGroupCounter;
+extern DWORD FireBullet;
 }
 
 void GetAddresses();

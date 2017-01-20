@@ -1,27 +1,14 @@
 #include "stdafx.h"
-#include "CCSPlayer.h"
+#include "CCSPlayer.h"														 
 
-PLH::Detour* bulletTypeHook = new PLH::Detour;
 PLH::Detour* giveAmmoHook = new PLH::Detour;
 PLH::Detour* clientCommandHook = new PLH::Detour;
 PLH::Detour* setModelClassHook = new PLH::Detour;
 PLH::Detour* precacheHook = new PLH::Detour;
-PLH::Detour* state_LookupInfoHook = new PLH::Detour;
-PLH::Detour* changeTeamHook = new PLH::Detour;
 PLH::Detour* handleCommand_JoinClassHook = new PLH::Detour;
 PLH::Detour* secondPrimaryHook = new PLH::Detour;
 PLH::Detour* holster_UspHook = new PLH::Detour;
 PLH::Detour* fireBulletHook = new PLH::Detour;
-
-void __fastcall hkGetBulletTypeParameters( CCSPlayer* thisptr, void*, float& fPenetrationPower, float& flPenetrationDistance )
-{
-	using fn_t = void( __thiscall* )(CCSPlayer*, float&, float&);
-
-	fPenetrationPower = 1000;
-	flPenetrationDistance = 8000.0;
-
-	//return bulletTypeHook->GetOriginal<fn_t>()(thisptr, fPenetrationPower, flPenetrationDistance);
-}
 
 void __fastcall hkGiveAmmo( CWeaponCSBase* thisptr, void* edx, int a1, int iCount, bool bSuppressSound, int a2 )
 {
@@ -166,40 +153,6 @@ void __fastcall hkPrecache( CCSPlayer* thisptr )
 	precacheHook->GetOriginal<fn_t>()(thisptr);
 }
 
-CCSPlayerStateInfo* __fastcall hkState_LookupInfo( CSPlayerState state )
-{
-	using fn_t = CCSPlayerStateInfo*(__fastcall*)(CSPlayerState);
-
-	CCSPlayerStateInfo* res = state_LookupInfoHook->GetOriginal<fn_t>()(state);
-
-	ConsoleDebugW( L"Looking up state %i %S\n", state, res->m_pStateName );
-
-	static bool bSetNewStateEnter = false;
-
-	if ( !bSetNewStateEnter )
-	{
-		g_pPlayerStateInfos[ 3 ].pfnEnterState = &CCSPlayer::State_Enter_PICKINGCLASS;
-		ConsoleDebugW( L"Set new EnterState for %S!\n", g_pPlayerStateInfos[ 3 ].m_pStateName );
-		bSetNewStateEnter = true;
-	}
-
-	return res;
-}
-
-void __fastcall hkChangeTeam( CCSPlayer* thisptr, void*, int iTeamNum )
-{
-	using fn_t = void( __thiscall* )(CCSPlayer*, int);
-
-	ConsoleDebugW( L"ChangeTeam called!\n" );
-
-	//thisptr->State_Transition( STATE_PICKINGCLASS );
-
-	//DWORD jumpman = Addresses::ChangeTeam + 5; 
-	//__asm jmp jumpman;
-
-	changeTeamHook->GetOriginal<fn_t>()(thisptr, iTeamNum);
-}
-
 bool __fastcall hkHandleCommand_JoinClass( CCSPlayer* thisptr )
 {
 	using fn_t = bool( __thiscall* )(CCSPlayer*);
@@ -257,31 +210,7 @@ bool __fastcall hkHolster_USP( CBaseCombatWeapon* thisptr, void*, CBaseCombatWea
 }
 
 void __fastcall hkFireBullet( CCSPlayer* thisptr, void*, Vector vecSrc, const QAngle &shootAngles, int iPenetration, void* pEconItemAttributes, int iBulletType, int iDamage, float flRangeModifier, CBaseEntity *pevAttacker, bool bDoEffects, float x, float y )
-{
-	//using fn_t = void(__thiscall*)(CCSPlayer*, Vector, const QAngle&, float, int, int, int, float, CBaseEntity*, bool, float, float, int, int);
-
-	/*int iWeaponID = thisptr->GetActiveCSWeapon()->GetWeaponID();
-
-	const char* weaponAlias = WeaponIDToAlias( iWeaponID );
-
-	if ( !weaponAlias )
-	{
-		DevMsg( "FX_FireBullets: weapon alias for ID %i not found\n", iWeaponID );
-		return;
-	}
-
-	char wpnName[ 128 ];
-	Q_snprintf( wpnName, sizeof( wpnName ), "weapon_%s", weaponAlias );
-	WEAPON_FILE_INFO_HANDLE	hWpnInfo = LookupWeaponInfoSlot( wpnName );
-
-	if ( hWpnInfo == GetInvalidWeaponInfoHandle() )
-	{
-		DevMsg( "FX_FireBullets: LookupWeaponInfoSlot failed for weapon %s\n", wpnName );
-		return;
-	}
-
-	CCSWeaponInfo *pWeaponInfo = static_cast< CCSWeaponInfo* >(GetFileWeaponInfoFromHandle( hWpnInfo ));*/
-
+{					  
 	thisptr->FireBullet( vecSrc, shootAngles, iPenetration, iBulletType, iDamage, flRangeModifier, pevAttacker, bDoEffects, x, y );
 }
 
@@ -299,15 +228,6 @@ void HookCSPlayer()
 	precacheHook->SetupHook( (BYTE*) Addresses::Precache, (BYTE*) &hkPrecache );
 	precacheHook->Hook();
 
-	/*DWORD state_LookupInfoAddress = (DWORD) GetModuleHandleW( L"server.dll" ) + 0x416880;
-	ConsoleDebugW( L"State_LookupInfo: %X\n", state_LookupInfoAddress );
-
-	state_LookupInfoHook->SetupHook( (BYTE*) state_LookupInfoAddress, (BYTE*) &hkState_LookupInfo );
-	state_LookupInfoHook->Hook();*/
-
-	/*changeTeamHook->SetupHook( (BYTE*) Addresses::ChangeTeam, (BYTE*) &hkChangeTeam );
-	changeTeamHook->Hook();*/
-
 	handleCommand_JoinClassHook->SetupHook( (BYTE*) Addresses::HandleCommand_JoinClass, (BYTE*) &hkHandleCommand_JoinClass );
 	handleCommand_JoinClassHook->Hook();
 
@@ -316,18 +236,9 @@ void HookCSPlayer()
 	secondPrimaryHook->SetupHook( (BYTE*) secondPrimaryAddress, (BYTE*) &hkSecondaryAttack );
 	secondPrimaryHook->Hook();*/
 
-	BYTE* bulletTypeAdd = (BYTE*) ((DWORD)g_dwServerBase + 0x42C8D0);
-	ConsoleDebugW( L"GetBulletTypeParameters: %p\n", bulletTypeAdd );
-
-	bulletTypeHook->SetupHook( bulletTypeAdd, (BYTE*) &hkGetBulletTypeParameters );
-	bulletTypeHook->Hook();
-
 	//holster_UspHook->SetupHook( (BYTE*) Addresses::Holster_hpk2000, (BYTE*) &hkHolster_USP );
 	//holster_UspHook->Hook();
 
-	BYTE* fireBulletAddy = (BYTE*) ((DWORD) g_dwServerBase + 0x42D6A0);
-	ConsoleDebugW( L"CCSPlayer::FireBullet: %p\n", fireBulletAddy );
-
-	fireBulletHook->SetupHook( fireBulletAddy, (BYTE*) &hkFireBullet );
+	fireBulletHook->SetupHook( (BYTE*) Addresses::FireBullet, (BYTE*) &hkFireBullet );
 	fireBulletHook->Hook();
 }
