@@ -60,7 +60,7 @@ void __fastcall hkPaintTraverse( vgui::IPanel* thisptr, void*, vgui::VPANEL vgui
 	int wide, tall; 
 	g_pVGuiSurface->GetTextSize( hTahoma, L"Classic Offensive", wide, tall );		  	
 
-	DrawString( width - wide - 5, 5, Color( 255, 255, 255, 255 ), hTahoma, L"Classic Offensive" );	  	
+	DrawString( width - wide - 5, 5, Color( 255, 255, 255, 255 ), hTahoma, L"Classic Offensive" );	  			   
 }			 
 
 void HookPanel()

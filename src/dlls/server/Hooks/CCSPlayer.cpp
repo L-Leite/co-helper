@@ -9,6 +9,8 @@ PLH::Detour* handleCommand_JoinClassHook = new PLH::Detour;
 PLH::Detour* secondPrimaryHook = new PLH::Detour;
 PLH::Detour* holster_UspHook = new PLH::Detour;
 PLH::Detour* fireBulletHook = new PLH::Detour;
+PLH::Detour* postThinkHook = new PLH::Detour;
+PLH::Detour* setFovHook = new PLH::Detour;
 
 void __fastcall hkGiveAmmo( CWeaponCSBase* thisptr, void* edx, int a1, int iCount, bool bSuppressSound, int a2 )
 {
@@ -172,33 +174,64 @@ bool __fastcall hkHandleCommand_JoinClass( CCSPlayer* thisptr )
 	return handleCommand_JoinClassHook->GetOriginal<fn_t>()(thisptr);
 }
 
-void __fastcall hkSecondaryAttack( CWeaponCSBase* thisptr )
+CON_COMMAND( print_weapon_id, "Prints active weapon's ID" )
 {
-	using fn_t = void( __thiscall* )(CWeaponCSBase*);
+	CCSPlayer* pLocalPlayer = (CCSPlayer*) UTIL_GetListenServerHost();
 
-	if ( strcmp( thisptr->GetClassname(), "weapon_sg556" ) )
-	{
-		secondPrimaryHook->GetOriginal<fn_t>()(thisptr);
+	if ( !pLocalPlayer )
 		return;
-	}
+
+	CWeaponCSBase* pActiveWeapon = pLocalPlayer->GetActiveCSWeapon();
+
+	if ( !pActiveWeapon )
+		return;
+
+	DevMsg( "weapon id: %i weapon type: %i\n", pActiveWeapon->GetCSWeaponID(), pActiveWeapon->GetWeaponType() );
+}
+
+void __fastcall hkSecondaryAttack( CWeaponCSBaseGun* thisptr )
+{
+	using fn_t = void( __thiscall* )(CWeaponCSBaseGun*);
 
 	CCSPlayer *pPlayer = thisptr->GetPlayerOwner();
+
 	if ( !pPlayer )
 		return;
 
-	if ( pPlayer->GetFOV() == pPlayer->GetDefaultFOV() )
+	if ( thisptr->GetCSWeaponID() != WEAPON_AUG && thisptr->GetCSWeaponID() != WEAPON_SG556 )
 	{
+		secondPrimaryHook->GetOriginal<fn_t>()(thisptr);
+		return;
+	}  	
+
+	if ( thisptr->GetCSZoomLevel() == 0 )
+	{	 
+		pPlayer->SetFOV( pPlayer, 55, 0.2f );
+		pPlayer->m_bIsScoped = true;
+		thisptr->m_weaponMode = Secondary_Mode;
+		thisptr->SetCSZoomLevel( 1 );
+	}
+	else
+	{ 
+		pPlayer->SetFOV( pPlayer, 0, 0.15f );
+		pPlayer->m_bIsScoped = false;
+		thisptr->m_weaponMode = Primary_Mode;
+		thisptr->SetCSZoomLevel( 0 );
+	}
+
+	/*if ( pPlayer->GetFOV() == pPlayer->GetDefaultFOV() )
+	{	 
 		pPlayer->SetFOV( pPlayer, 55, 0.2f );
 	}
 	else if ( pPlayer->GetFOV() == 55 )
-	{
+	{	   
 		pPlayer->SetFOV( pPlayer, 0, 0.15f );
 	}
 	else
 	{
 		//FIXME: This seems wrong
 		pPlayer->SetFOV( pPlayer, pPlayer->GetDefaultFOV() );
-	}
+	}*/
 
 	thisptr->m_flNextSecondaryAttack = gpGlobals->curtime + 0.3;
 }
@@ -209,17 +242,62 @@ bool __fastcall hkHolster_USP( CBaseCombatWeapon* thisptr, void*, CBaseCombatWea
 	return ((fn_t)Addresses::Holster)( thisptr, pSwitchingTo );
 }
 
-void __fastcall hkFireBullet( CCSPlayer* thisptr, void*, Vector vecSrc, const QAngle &shootAngles, int iPenetration, void* pEconItemAttributes, int iBulletType, int iDamage, float flRangeModifier, CBaseEntity *pevAttacker, bool bDoEffects, float x, float y )
+void __fastcall hkFireBullet( CCSPlayer* thisptr, void*, Vector vecSrc, const QAngle &shootAngles, float fPenetration, void* pEconItemAttributes, int iBulletType, int iDamage, float flRangeModifier, CBaseEntity *pevAttacker, bool bDoEffects, float x, float y )
 {					  
-	thisptr->FireBullet( vecSrc, shootAngles, iPenetration, iBulletType, iDamage, flRangeModifier, pevAttacker, bDoEffects, x, y );
+	thisptr->FireBullet( vecSrc, shootAngles, iBulletType, iDamage, fPenetration, flRangeModifier, pevAttacker, bDoEffects, x, y );
+}
+
+void __fastcall hkPostThink( CCSPlayer* thisptr )
+{					
+	/*if ( thisptr == UTIL_GetListenServerHost() )
+	{
+		Vector vEnd;
+		AngleVectors( thisptr->PlayerData()->v_angle += (thisptr->m_Local.m_aimPunchAngle * 2.0f), &vEnd );
+
+		Vector vStart = thisptr->EyePosition();
+		vEnd = vStart + (vEnd * 8192.0f);
+
+		trace_t tr;
+		UTIL_TraceLine( vStart, vEnd, MASK_SOLID | CONTENTS_DEBRIS | CONTENTS_HITBOX, thisptr, COLLISION_GROUP_NONE, &tr );
+
+		char textBuffer[200];
+
+		NDebugOverlay::ScreenText( 10.0f, 10.0f, "Trace test", 255, 255, 255, 0, -1.0f );
+
+		V_snprintf( textBuffer, sizeof( textBuffer ), "startpos: %f %f %f", tr.startpos.x, tr.startpos.y, tr.startpos.z );
+		NDebugOverlay::ScreenText( 10.0f, 15.0f, textBuffer, 255, 255, 255, 0, -1.0f );
+
+		V_snprintf( textBuffer, sizeof( textBuffer ), "endpos: %f %f %f", tr.endpos.x, tr.endpos.y, tr.endpos.z );
+		NDebugOverlay::ScreenText( 10.0f, 20.0f, textBuffer, 255, 255, 255, 0, -1.0f );
+
+		V_snprintf( textBuffer, sizeof( textBuffer ), "surface name: %s", tr.surface.name );
+		NDebugOverlay::ScreenText( 10.0f, 25.0f, textBuffer, 255, 255, 255, 0, -1.0f );
+
+		V_snprintf( textBuffer, sizeof( textBuffer ), "entity: %p %s", tr.m_pEnt, tr.m_pEnt ? tr.m_pEnt->GetEntityNameAsCStr() : "null" );
+		NDebugOverlay::ScreenText( 10.0f, 30.0f, textBuffer, 255, 255, 255, 0, -1.0f );
+
+		NDebugOverlay::Line( tr.startpos, tr.endpos, 255, 255, 255, true, -1.0f );
+	}*/  	
+
+	postThinkHook->GetOriginal<decltype(&hkPostThink)>()( thisptr );
+}
+
+bool __fastcall hkSetFOV( CBasePlayer* thisptr, void* edx, CBaseEntity *pRequester, int FOV, /*float zoomRate,*/ int iZoomStart )
+{
+	using fn_t = bool( __thiscall* )(CBasePlayer*, CBaseEntity*, int, int);
+
+	float zoomRate;
+	__asm movss zoomRate, xmm3; // zoomRate is stored in xmm0 thanks to compiler optimizations
+
+	return setFovHook->GetOriginal<fn_t>()(thisptr, pRequester, FOV, iZoomStart);
 }
 
 void HookCSPlayer()
 {
-	giveAmmoHook->SetupHook( (BYTE*) Addresses::GiveAmmo, (BYTE*) hkGiveAmmo );
+	giveAmmoHook->SetupHook( (BYTE*) Addresses::GiveAmmo, (BYTE*) &hkGiveAmmo );
 	giveAmmoHook->Hook();
 
-	clientCommandHook->SetupHook( (BYTE*) Addresses::ClientCommand, (BYTE*) hkClientCommand );
+	clientCommandHook->SetupHook( (BYTE*) Addresses::ClientCommand, (BYTE*) &hkClientCommand );
 	clientCommandHook->Hook();
 
 	setModelClassHook->SetupHook( (BYTE*) Addresses::SetModelFromClass, (BYTE*) &hkSetModelFromClass );
@@ -231,14 +309,20 @@ void HookCSPlayer()
 	handleCommand_JoinClassHook->SetupHook( (BYTE*) Addresses::HandleCommand_JoinClass, (BYTE*) &hkHandleCommand_JoinClass );
 	handleCommand_JoinClassHook->Hook();
 
-	/*DWORD secondPrimaryAddress = g_dwServerBase + 0x4C2720;
+	DWORD secondPrimaryAddress = g_dwServerBase + 0x4AB880;
 	ConsoleDebugW( L"Second primary: %X", secondPrimaryAddress );
 	secondPrimaryHook->SetupHook( (BYTE*) secondPrimaryAddress, (BYTE*) &hkSecondaryAttack );
-	secondPrimaryHook->Hook();*/
+	secondPrimaryHook->Hook();
 
 	//holster_UspHook->SetupHook( (BYTE*) Addresses::Holster_hpk2000, (BYTE*) &hkHolster_USP );
 	//holster_UspHook->Hook();
 
 	fireBulletHook->SetupHook( (BYTE*) Addresses::FireBullet, (BYTE*) &hkFireBullet );
 	fireBulletHook->Hook();
+
+	postThinkHook->SetupHook( (BYTE*) Addresses::PostThink, (BYTE*) &hkPostThink );
+	postThinkHook->Hook();
+
+	setFovHook->SetupHook( (BYTE*) Addresses::SetFOV, (BYTE*) &hkSetFOV );
+	setFovHook->Hook();
 }

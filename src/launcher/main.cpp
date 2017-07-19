@@ -200,5 +200,10 @@ int APIENTRY wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCm
 	swprintf_s( g_wzBuffer, L"%s\\ClassicServer.dll", g_pMainDirectory );
 	g_hServerDll = LoadLibraryW( g_wzBuffer );
 
+	char varBuffer[16];
+	sprintf( varBuffer, "%u", 243750 );
+	SetEnvironmentVariableA( "SteamAppId", varBuffer );
+	SetEnvironmentVariableA( "SteamGameId", varBuffer );
+
 	return StartLauncher( hInstance, hPrevInstance, lpCmdLine, nCmdShow );
 }

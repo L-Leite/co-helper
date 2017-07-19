@@ -6,6 +6,7 @@ uintptr_t g_dwServerBase = 0;
 char g_szBuffer[ 1024 ];
 wchar_t g_wzBuffer[ 1024 ];
 
+CGlobalVars* gpGlobals = nullptr;
 CGlobalEntityList* gEntList = nullptr;
 CBaseEntityList *g_pEntityList = nullptr;
 IVEngineServer* g_pEngineServer = nullptr;
@@ -40,7 +41,7 @@ void InitializeSharedInterfaces()
 
 	ConnectInterfaces( createInterfaces, sizeof( createInterfaces ) / sizeof( CreateInterfaceFn ) );
 
-	gpGlobals = *(CGlobalVars**) (SearchPattern( L"engine.dll", "\x68\xCC\xCC\xCC\xCC\x50\x50\xFF\x35" ) + 1);
+	gpGlobals = *(CGlobalVars**) (SearchPattern( L"engine.dll", "\x68\xCC\xCC\xCC\xCC\x50\x50\x8B\x02" ) + 1);
 	ConsoleDebugW( L"gpGlobals: %p\n", gpGlobals );
 
 	CreateInterfaceFn physicsFactory = (CreateInterfaceFn) GetProcAddress( GetModuleHandleW( L"vphysics.dll" ), "CreateInterface" );
@@ -108,7 +109,7 @@ void OnServerAttach()
 	ConsoleDebugW( L"StockAmmoAddress2: %X\n", stockAmmoAddress2 );
 	memset( (void*) stockAmmoAddress2, 0x90, 18 );
 
-	BYTE* checkparamsAddress = (BYTE*) SearchPattern( L"server.dll", "\x74\x7B\x8B\x77\x04" );
+	BYTE* checkparamsAddress = (BYTE*) SearchPattern( L"server.dll", "\x74\x6E\x8B\x77\x04" );
 	ConsoleDebugW( L"checkparamsAddress: %p\n", checkparamsAddress );
 	*checkparamsAddress = 0xEB;
 
@@ -131,6 +132,8 @@ void OnServerAttach()
 		sv_penetration_type->RemoveFlags( FCVAR_HIDDEN );
 		ConsoleDebugW( L"Changed sv_penetration_type value and flags...\n" );
 	}
+
+	//GetCSViewVectors()->m_vView.z = 30.0f;
 
 	HookCSPlayer();
 	HookCSGameMovement();

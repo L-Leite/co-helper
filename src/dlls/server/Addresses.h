@@ -31,13 +31,17 @@ extern DWORD Holster;
 extern DWORD BloodDrips;
 extern DWORD DispatchEffect;
 extern DWORD ApplyMultiDamage;
-extern DWORD ApplyMultiDamage2;
-extern DWORD ClearMultiDamage;			
+extern DWORD AddMultiDamage;
+//extern DWORD ClearMultiDamage;	
+extern DWORD MultiDamageInit;
 extern DWORD CalculateBulletDamageForce;
 extern DWORD LockStudioHdr;
 extern DWORD CalcAbsolutePosition;
 extern DWORD BulletGroupCounter;
 extern DWORD FireBullet;
+extern DWORD PostThink;
+extern DWORD CSViewVectors;
+extern DWORD MultiDamage;
 }
 
 void GetAddresses();

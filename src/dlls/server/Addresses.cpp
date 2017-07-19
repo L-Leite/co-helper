@@ -31,26 +31,30 @@ DWORD Holster = 0;
 DWORD BloodDrips = 0;
 DWORD DispatchEffect = 0;
 DWORD ApplyMultiDamage = 0;
-DWORD ApplyMultiDamage2 = 0;
-DWORD ClearMultiDamage = 0;
+DWORD AddMultiDamage = 0;
+//DWORD ClearMultiDamage = 0;
+DWORD MultiDamageInit = 0;
 DWORD CalculateBulletDamageForce = 0;
 DWORD LockStudioHdr = 0;
 DWORD CalcAbsolutePosition = 0;
 DWORD BulletGroupCounter = 0;
 DWORD FireBullet = 0;
+DWORD PostThink = 0;
+DWORD CSViewVectors = 0;
+DWORD MultiDamage = 0;
 }
 
 void GetAddresses()
 {
 	ConsoleDebugW( L"\n### SERVER ADDRESSES START\n" );
 
-	Addresses::EmitSound = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x70\x56\x57\x8B\xF9\x8B\x0D\xCC\xCC\xCC\xCC\x83\xB9\xCC\xCC\xCC\xCC\xCC" );
+	Addresses::EmitSound = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x70\x0F\x57\xC9" );
 	ConsoleDebugW( L"EmitSound: %X\n", Addresses::EmitSound );
 
 	Addresses::AmmoDef = SearchPattern( L"server.dll", "\xB9\xCC\xCC\xCC\xCC\xE8\xCC\xCC\xCC\xCC\x8B\xF0\x85\xF6\x78\xD8" ) + 1;
 	ConsoleDebugW( L"AmmoDef: %X\n", Addresses::AmmoDef );
 
-	Addresses::GiveAmmo = SearchPattern( L"server.dll", "\x55\x8B\xEC\x53\x8B\x5D\x14\x85\xDB" );
+	Addresses::GiveAmmo = SearchPattern( L"server.dll", "\x55\x8B\xEC\x51\x8B\x45\x14\x53\x56" );
 	ConsoleDebugW( L"GiveAmmo: %X\n", Addresses::GiveAmmo );
 
 	Addresses::HintMessage = SearchPattern( L"server.dll", "\x55\x8B\xEC\x51\x53\x8B\xD9\x89\x5D\xFC" );
@@ -89,10 +93,10 @@ void GetAddresses()
 	Addresses::ClientCommand = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x5C\x53\x8B\x5D\x08\x56\x57\x8B\xF1" );
 	ConsoleDebugW( L"ClientCommand: %X\n", Addresses::ClientCommand );
 
-	Addresses::SetModelFromClass = SearchPattern( L"server.dll", "\x55\x8B\xEC\x51\x56\x57\x8B\xF9\x8B\x87" );
+	Addresses::SetModelFromClass = SearchPattern( L"server.dll", "\x53\x56\x57\x8B\xF9\x8B\x87\xCC\xCC\xCC\xCC\x83\xF8\x02" );
 	ConsoleDebugW( L"SetModelFromClass: %X\n", Addresses::SetModelFromClass );
 
-	Addresses::Precache = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xEC\x1C\x53\x56\x57\x8B\xF9\xC7\x45" );
+	Addresses::Precache = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xEC\x20\x53\x8B\xD9\xC7\x45\xCC\xCC\xCC\xCC\xCC\x56\xB9" );
 	ConsoleDebugW( L"Precache: %X\n", Addresses::Precache );
 
 	Addresses::ChangeTeam = SearchPattern( L"server.dll", "\xE8\xCC\xCC\xCC\xCC\x8B\x0D\xCC\xCC\xCC\xCC\x8D\x45\x08\x50\x8D\x45\xF0" );
@@ -104,7 +108,7 @@ void GetAddresses()
 	Addresses::GetIntoGame = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xE4\xC0\x83\xEC\x34\x0F\x57\xDB" );
 	ConsoleDebugW( L"GetIntoGame: %X\n", Addresses::GetIntoGame );
 
-	Addresses::DLLShutdown = SearchPattern( L"server.dll", "\x55\x8B\xEC\x51\x8B\x0D\xCC\xCC\xCC\xCC\x8B\x01\x8B\x80" );
+	Addresses::DLLShutdown = SearchPattern( L"server.dll", "\x8B\x0D\xCC\xCC\xCC\xCC\x8B\x01\x8B\x80\xCC\xCC\xCC\xCC\xFF\xD0\x84\xC0\x75\x05" );
 	ConsoleDebugW( L"DLLShutdown: %X\n", Addresses::DLLShutdown );
 
 	Addresses::Duck = SearchPattern( L"server.dll", "\x55\x8B\xEC\x81\xEC\xCC\xCC\xCC\xCC\x56\x57\x8B\xF9\x8B\x57\x04" );
@@ -128,16 +132,20 @@ void GetAddresses()
 	Addresses::DispatchEffect = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x20\x56\x8B\xF1\x8D\x4C\x24\x04" );
 	ConsoleDebugW( L"DispatchEffect: %X\n", Addresses::DispatchEffect );
 
-	Addresses::ApplyMultiDamage = SearchPattern( L"server.dll", "\xA1\xCC\xCC\xCC\xCC\x56\x83\xF8\xFF\x74\x66" );
+	Addresses::ApplyMultiDamage = SearchPattern( L"server.dll", "\xA1\xCC\xCC\xCC\xCC\x56\x83\xF8\xFF\x0F\x84\xCC\xCC\xCC\xCC\x0F\xB7\x15" );
 	ConsoleDebugW( L"ApplyMultiDamage: %X\n", Addresses::ApplyMultiDamage );
 
-	Addresses::ApplyMultiDamage2 = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xEC\x0C\x53\x56\x57\x8B\xFA\x8B\xF1\x85\xFF" );
-	ConsoleDebugW( L"ApplyMultiDamage2: %X\n", Addresses::ApplyMultiDamage2 );
+	Addresses::AddMultiDamage = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xEC\x0C\x53\x56\x57\x8B\xFA\x8B\xF1\x85\xFF" );
+	ConsoleDebugW( L"AddMultiDamage: %X\n", Addresses::AddMultiDamage );
 
-	Addresses::ClearMultiDamage = SearchPattern( L"server.dll", "\xF3\x0F\x10\x15\xCC\xCC\xCC\xCC\xF3\x0F\x10\x0D\xCC\xCC\xCC\xCC\xF3\x0F\x10\x05\xCC\xCC\xCC\xCC\xA1" );
-	ConsoleDebugW( L"ClearMultiDamage: %X\n", Addresses::ClearMultiDamage );
+	// Fucking ClearMultiDamage got inlined aaaaaaaaaaaaaaaa
+	//Addresses::ClearMultiDamage = SearchPattern( L"server.dll", "\xC7\x41\xCC\xCC\xCC\xCC\xCC\xC7\x41\xCC\xCC\xCC\xCC\xCC\xC7\x41\xCC\xCC\xCC\xCC\xCC\xC7\x41\xCC\xCC\xCC\xCC\xCC\xC7\x41\xCC\xCC\xCC\xCC\xCC\xC7\x41\xCC\xCC\xCC\xCC\xCC\xC7\x41\xCC\xCC\xCC\xCC\xCC\xC7\x41\xCC\xCC\xCC\xCC\xCC\xC7\x41\xCC\xCC\xCC\xCC\xCC\xC7\x41" );
+	//ConsoleDebugW( L"ClearMultiDamage: %X\n", Addresses::ClearMultiDamage );
 
-	Addresses::CalculateBulletDamageForce = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xEC\x14\x53\x56\x8B\x75\x0C\x8B\xD9" );
+	Addresses::MultiDamageInit = SearchPattern( L"server.dll", "\x55\x8B\xEC\x56\x57\x8B\x7D\x08\x8B\xF1\x85\xFF\x74\x0E\x8B\x07\x8B\xCF\xFF\x50\x08\x8B\x00\x89\x46\x24" );
+	ConsoleDebugW( L"MultiDamageInit: %X\n", Addresses::MultiDamageInit );
+
+	Addresses::CalculateBulletDamageForce = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xEC\x18\x53\x56\x8B\x75\x0C\x8B\xD9" );
 	ConsoleDebugW( L"CalculateBulletDamageForce: %X\n", Addresses::CalculateBulletDamageForce );
 
 	Addresses::LockStudioHdr = SearchPattern( L"server.dll", "\x57\x8B\xF9\x83\xBF\xCC\xCC\xCC\xCC\xCC\x0F\x84\xCC\xCC\xCC\xCC\xA1\xCC\xCC\xCC\xCC\x56" );
@@ -146,28 +154,38 @@ void GetAddresses()
 	Addresses::CalcAbsolutePosition = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xE4\xF0\x83\xEC\x68\x56\x8B\xF1\x57\x8B\x8E" );
 	ConsoleDebugW( L"CalcAbsolutePosition: %X\n", Addresses::CalcAbsolutePosition );
 
-	Addresses::FireBullet = SearchPattern( L"server.dll", "\x53\x8B\xDC\x83\xEC\x08\x83\xE4\xF0\x83\xC4\x04\x55\x8B\x6B\x04\x89\x6C\x24\x04\x8B\xEC\x81\xEC\xCC\xCC\xCC\xCC\x66\x0F\x6E\x43" );
+	Addresses::FireBullet = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xE4\xF0\x81\xEC\xCC\xCC\xCC\xCC\x66\x0F\x6E\x45" );
 	ConsoleDebugW( L"FireBullet: %X\n", Addresses::FireBullet );
 
+	Addresses::PostThink = SearchPattern( L"server.dll", "\x55\x8B\xEC\x83\xE4\xF8\x81\xEC\xCC\xCC\xCC\xCC\x53\x56\x57\x8B\xD9\xE8\xCC\xCC\xCC\xCC\x80\xBB" );
+	ConsoleDebugW( L"PostThink: %X\n", Addresses::PostThink );
 
-	g_pEntityList = *(CBaseEntityList**)( SearchPattern( L"server.dll", "\xB9\xCC\xCC\xCC\xCC\xE8\xCC\xCC\xCC\xCC\x51\x8B\x0E" ) + 1 );
+
+	g_pEntityList = *(CBaseEntityList**)( SearchPattern( L"server.dll", "\xB9\xCC\xCC\xCC\xCC\x8B\x15\xCC\xCC\xCC\xCC\xFF\x12\x51" ) + 1 );
 	ConsoleDebugW( L"g_pEntityList: %p\n", g_pEntityList );
 	gEntList = (CGlobalEntityList*) g_pEntityList;
 
 	g_pPlayerStateInfos = *(CCSPlayerStateInfo**) ( SearchPattern( L"server.dll", "\x8D\x04\xC5\xCC\xCC\xCC\xCC\x8B\xE5" ) + 3 );
 	ConsoleDebugW( L"g_pPlayerStateInfos: %p\n", g_pPlayerStateInfos );
 
-	g_pGameRules = *(CGameRules***) (SearchPattern( L"server.dll", "\x89\x1D\xCC\xCC\xCC\xCC\x8B\x40\x18" ) + 2);
+	g_pGameRules = *(CGameRules***) (SearchPattern( L"server.dll", "\x89\x35\xCC\xCC\xCC\xCC\x6A" ) + 2);
 	ConsoleDebugW( L"g_pGameRules: %p\n", g_pGameRules );
 
 	//g_pTE = *(ITempEntsSystem***) (SearchPattern( L"server.dll", "\xB9\xCC\xCC\xCC\xCC\xFF\x50\x50\x8D\x4C\x24\x50" ) + 1);
 	//ConsoleDebugW( L"&te: %p\n", g_pTE );
 
-	CBaseEntity::m_nDebugPlayer = *(int**) (SearchPattern( L"server.dll", "\x8B\x15\xCC\xCC\xCC\xCC\x83\xEC\x3C" ) + 2);
+	CBaseEntity::m_nDebugPlayer = *(int**) (SearchPattern( L"server.dll", "\x8B\x15\xCC\xCC\xCC\xCC\x83\xEC\x18\x56" ) + 2);
 	ConsoleDebugW( L"&CBaseEntity::m_nDebugPlayer: %p\n", CBaseEntity::m_nDebugPlayer );
 
-	CCSPlayer::s_BulletGroupCounter = *(int**) (SearchPattern( L"server.dll", "\xA1\xCC\xCC\xCC\xCC\x51\x88\x4F\x5C" ) + 1);
+	CCSPlayer::s_BulletGroupCounter = *(int**) (SearchPattern( L"server.dll", "\xA1\xCC\xCC\xCC\xCC\x88\x51\x5C" ) + 1);
 	ConsoleDebugW( L"&CCSPlayer::s_BulletGroupCounter: %p\n", CCSPlayer::s_BulletGroupCounter );
+
+	//Addresses::CSViewVectors = *(DWORD*) (SearchPattern( L"server.dll", "\xB8\xCC\xCC\xCC\xCC\xC3" ) + 1);
+	Addresses::CSViewVectors = g_dwServerBase + 0x8E3350;
+	ConsoleDebugW( L"&CSViewVectors: %X\n", Addresses::CSViewVectors );
+
+	Addresses::MultiDamage = SearchPattern( L"server.dll", "\xB9\xCC\xCC\xCC\xCC\x68\xCC\xCC\xCC\xCC\x68\xCC\xCC\xCC\xCC\x68\xCC\xCC\xCC\xCC\xFF\x75\x14" ) + 1;
+	ConsoleDebugW( L"MultiDamage: %X\n", Addresses::MultiDamage );
 
 	ConsoleDebugW( L"### SERVER ADDRESSES END\n\n" );
 }

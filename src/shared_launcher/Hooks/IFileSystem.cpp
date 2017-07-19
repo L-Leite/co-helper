@@ -89,15 +89,18 @@ void* __fastcall hkOpenEx( IFileSystem* thisptr, void*, const char* pFileName, c
 {
 	using fn_t = void*(__thiscall*)(IFileSystem*, const char*, const char*, unsigned, const char*, char**);
 
+	if ( strstr( pFileName, "video.txt" ) )
+		printf( "yuh\n" );
+
 	void* res = ((fn_t) fnOpenEx)(thisptr, pFileName, pOptions, flags, pathID, ppszResolvedFilename);
 
-	if ( res == (void*) -1 && (strstr( pFileName, "maps\\" ) || strstr( pFileName, "maps/" )) && strstr( pFileName, ".bsp" ) )
+	/*if ( res == (void*) -1 && (strstr( pFileName, "maps\\" ) || strstr( pFileName, "maps/" )) && strstr( pFileName, ".bsp" ) )
 	{
 		sprintf_s( g_szBuffer, "%S\\csgo\\%s", g_pGameDirectory, pFileName );
 
 		printf( "Couldn't find map %s in our files, looking up %s in csgo...\n", pFileName, g_szBuffer );
 		res = ((fn_t) fnOpenEx)(thisptr, g_szBuffer, pOptions, flags, pathID, ppszResolvedFilename);
-	}
+	}*/
 
 	return res;
 }
@@ -165,7 +168,7 @@ void __fastcall hkAddSearchPath( IFileSystem* thisptr, void* edx, const char* pP
 	else
 		strcpy( szNewPath, pPath );
 
-	if ( !strcmp( pathID, "USRLOCAL" ) )
+	if ( !strcmp( pathID, "USRLOCAL" ) || !strcmp( pathID, "game_write" ) )
 	{
 		sprintf_s( szNewPath, "%S\\csco", g_pMainDirectory );
 	}
@@ -178,8 +181,14 @@ void* __fastcall hkOpen( IBaseFileSystem* thisptr, void*, const char* pFileName,
 {
 	using fn_t = void*( __thiscall* )(IBaseFileSystem*, const char*, const char*, const char*);
 
-	if ( strstr( pFileName, "config.cfg" ) )
+	static char szNewFileName[ 200 ];
+
+	if ( strstr( pFileName, "video.txt" ) )
+	{
+		//sprintf( szNewFileName, "%S\\ccso\\cfg\\video.txt", g_pMainDirectory );
 		printf( "hkOpen: filename: %s pathid: %s options: %s\n", pFileName, pathID, pOptions );
+		//return baseFileSystemHook->GetOriginal< fn_t >()(thisptr, szNewFileName, pOptions, pathID);
+	}
 
 	/*if ( !stricmp( pFileName, "//usrlocal/cfg/config.cfg" ) )
 	{
@@ -187,7 +196,9 @@ void* __fastcall hkOpen( IBaseFileSystem* thisptr, void*, const char* pFileName,
 		pFileName = "//mod/cfg/config.cfg";
 	}*/
 
-	return ((fn_t)fnOpen)( thisptr, pFileName, pOptions, pathID );
+	void* res = baseFileSystemHook->GetOriginal< fn_t >()(thisptr, pFileName, pOptions, pathID);
+
+	return res;
 }
 
 void __fastcall hkClose( IBaseFileSystem* thisptr, void*, void* file )
@@ -322,9 +333,10 @@ void OnFileSystemLoad( HMODULE hFileSystem )
 #ifndef	DEDICATED_LAUNCHER
 	/*baseFileSystemHook->SetupHook( (BYTE*) pBaseFileSystem, 10, (BYTE*) &hkFileExists );
 	baseFileSystemHook->Hook();
-	fnIsFileWritable = baseFileSystemHook->HookAdditional< void* >( 11, (BYTE*) &hkIsFileWritable );
-	fnOpen = baseFileSystemHook->HookAdditional< void* >( 2, (BYTE*) &hkOpen );
-	fnClose = baseFileSystemHook->HookAdditional< void* >( 3, (BYTE*) &hkClose );*/
+	fnIsFileWritable = baseFileSystemHook->HookAdditional< void* >( 11, (BYTE*) &hkIsFileWritable );;*/
+	//baseFileSystemHook->SetupHook( (BYTE*) pBaseFileSystem, 2, (BYTE*) &hkOpen );
+	//baseFileSystemHook->Hook();
+	//fnClose = baseFileSystemHook->HookAdditional< void* >( 3, (BYTE*) &hkClose )
 	//fnSize = baseFileSystemHook->HookAdditional< void* >( 7, (BYTE*) &hkSize );
 #endif
 	//fnGetFileTime = g_pBaseFileSystemHook->HookAdditional< void* >( 13, (BYTE*) &hkGetFileTime );

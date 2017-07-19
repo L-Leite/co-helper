@@ -4,3 +4,9 @@
 [submodule "sdk"]
 	path = sdk
 	url = https://github.com/Ochii/source-sdk-csco
+[submodule "libs/capstone"]
+	path = libs/capstone
+	url = https://github.com/Ochii/capstone
+[submodule "libs/PolyHook"]
+	path = libs/PolyHook
+	url = https://github.com/Ochii/PolyHook
